@@ -6,6 +6,8 @@ const { Bot } = require("node-telegram-bot-api");
 const goalService = require("./goal.service");
 const mentorService = require("./mentor.service");
 
+const displayCategory = (name = "") => name.replace(/[\uE000-\uF8FF]/gu, "").trim();
+
 const runGoalReminders = async (bot, date = new Date()) => {
   const goals = await Goal.find({active:true, reminderTime:{$ne:null}}).populate("user_id");
   for (const goal of goals) {
@@ -32,9 +34,11 @@ const runMentorPushes = async (bot, date = new Date()) => {
       const result = await mentorService.createDailyDelivery(preference, preference.user_id, date);
       if (result.alreadySent || !result.delivery) continue;
       const delivery = result.delivery;
+      const category = displayCategory(preference.category_id?.name);
+      const subcategory = preference.subcategory_id?.name || "Seçilmiş subkateqoriya";
       await bot.api.sendMessage({
         chat_id: preference.user_id.chatId,
-        text: `🧭 Mentor qeydi:\n\n${delivery.message_id.text}\n\n❤️ Bəyəndikdə yalnız bu subkateqoriyanın progressi 5% artır.`,
+        text: `${category ? `${category}\n` : ""}↳ ${subcategory}\n\n🧭 Mentor qeydi:\n\n${delivery.message_id.text}\n\n❤️ Bəyəndikdə yalnız bu subkateqoriyanın progressi 5% artır.`,
         reply_markup: { inline_keyboard: [[
           { text: "❤️ Bəyəndim", callback_data: `MA:${delivery._id}:LIKE` },
           { text: "🔄 Digər qeyd", callback_data: `MA:${delivery._id}:OTHER` }

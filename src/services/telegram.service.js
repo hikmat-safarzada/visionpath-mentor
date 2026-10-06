@@ -152,7 +152,7 @@ const showVision = async (ctx, user) => {
   const progressByPreference = new Map(progressRows.map((entry) => [String(entry.preference_id), entry.progress]));
   if (!preferences.length) {
     return ctx.reply("📊 VISION DASHBOARD\n\nHələ istiqamət seçilməyib.", {
-      reply_markup: inline([[{ text: "➕ İlk istiqaməti seç", callback_data: callback(fresh, "A") }]])
+      reply_markup: inline([[{ text: "➕ İlk hədəfi seç", callback_data: callback(fresh, "A") }]])
     });
   }
 
@@ -166,16 +166,24 @@ const showVision = async (ctx, user) => {
   }
   const text = ["📊 VISION DASHBOARD", ...[...groups.entries()].map(([category, rows]) => `\n${category}\n${rows.join("\n")}`)].join("\n");
   return ctx.reply(text, {
-    reply_markup: inline([[{ text: "➕ Yeni istiqamət", callback_data: callback(fresh, "A") }]])
+    reply_markup: inline([[{ text: "➕ Yeni hədəf", callback_data: callback(fresh, "A") }]])
   });
 };
 
-const sendMentorDelivery = async (ctx, delivery) => ctx.reply(`📝 Seçdiyin subkateqoriyaya uyğun mentor qeydi:\n\n${delivery.message_id.text}\n\n❤️ Bəyəndikdə yalnız bu subkateqoriyanın progressi 5% artır.`, {
-  reply_markup: inline([[
-    { text: "❤️ Bəyəndim", callback_data: `MA:${delivery._id}:LIKE` },
-    { text: "🔄 Digər qeyd", callback_data: `MA:${delivery._id}:OTHER` }
-  ]])
-});
+const sendMentorDelivery = async (ctx, delivery) => {
+  const preferenceId = delivery.preference_id?._id || delivery.preference_id || delivery.preferenceId;
+  const preference = preferenceId
+    ? await Preference.findById(preferenceId).populate("category_id", "name").populate("subcategory_id", "name").lean()
+    : null;
+  const category = preference?.category_id?.name ? `${categoryLabel(preference.category_id.name)}\n` : "";
+  const subcategory = preference?.subcategory_id?.name ? `↳ ${preference.subcategory_id.name}\n\n` : "";
+  return ctx.reply(`${category}${subcategory}📝 Mentor qeydi:\n\n${delivery.message_id.text}\n\n❤️ Bəyəndikdə yalnız bu subkateqoriyanın progressi 5% artır.`, {
+    reply_markup: inline([[
+      { text: "❤️ Bəyəndim", callback_data: `MA:${delivery._id}:LIKE` },
+      { text: "🔄 Digər qeyd", callback_data: `MA:${delivery._id}:OTHER` }
+    ]])
+  });
+};
 
 const startNewDirection = async (ctx, user) => {
   const fresh = await beginSession(user, "category");
@@ -248,7 +256,11 @@ const createTelegramBot = (token) => {
         const [, deliveryId, action] = data.split(":");
         const result = await mentorService.applyAction({ telegramId: ctx.from.id, deliveryId, action });
         await ctx.answerCallbackQuery({ text: progressText(result.progress.progress) });
-        if (result.nextDelivery) return sendMentorDelivery(ctx, { _id: result.nextDelivery.deliveryId, message_id: { text: result.nextDelivery.text } });
+        if (result.nextDelivery) return sendMentorDelivery(ctx, {
+          _id: result.nextDelivery.deliveryId,
+          preferenceId: result.nextDelivery.preferenceId,
+          message_id: { text: result.nextDelivery.text }
+        });
         return ctx.reply(progressText(result.progress.progress));
       }
 

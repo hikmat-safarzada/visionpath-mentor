@@ -17,6 +17,7 @@ const requireObjectId = (value, fieldName) => {
 
 const toDeliveryResponse = (delivery) => ({
     deliveryId: delivery._id.toString(),
+    preferenceId: delivery.preference_id._id ? delivery.preference_id._id.toString() : delivery.preference_id.toString(),
     messageId: delivery.message_id._id ? delivery.message_id._id.toString() : delivery.message_id.toString(),
     externalMessageId: delivery.message_id.message_id,
     text: delivery.message_id.text,
@@ -312,7 +313,10 @@ const getProgress = async ({ telegramId, subcategoryId }) => {
 };
 
 const getDuePreferences = async (date = new Date()) => {
-    const preferences = await Preference.find({ active: true }).populate("user_id");
+    const preferences = await Preference.find({ active: true })
+        .populate("user_id")
+        .populate("category_id", "name")
+        .populate("subcategory_id", "name");
     return preferences.filter(({ user_id: user, push_time: pushTime }) => user && getLocalTime(user.timezone, date) === pushTime);
 };
 

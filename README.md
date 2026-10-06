@@ -13,7 +13,7 @@ VisionPath istifadəçinin seçdiyi istiqamətləri gündəlik mentor qeydləri 
 
 Gündəlik push istifadəçinin yazdığı qeydi və ya əvvəl bəyəndiyi qeydi deyil, seçilmiş subkateqoriya üçün növbəti **mentor qeydini** göndərir. İstifadəçinin öz qeydi Vision Board-da görünür; **❤️ Bəyəndim** yalnız həmin subkateqoriyanın progressini artırır. Yenilənmiş progressi görmək üçün **📊 Vision Board** düyməsinə toxun.
 
-Naviqasiya klaviaturasında yalnız **🚀 Başla** və **📊 Vision Board** var. Yeni istiqamət əlavə etmək üçün Vision Board daxilindəki kontekst düyməsindən istifadə olunur.
+Naviqasiya klaviaturasında yalnız **🚀 Başla** və **📊 Vision Board** var. Yeni hədəf əlavə etmək üçün Vision Board daxilindəki kontekst düyməsindən istifadə olunur.
 
 Inline seçimlər qısamüddətli sessiya tokeni ilə qorunur: əvvəlki mesajdakı düyməyə klik etməklə onboarding-i yenidən davam etdirmək və ya eyni seçimi iki dəfə etmək mümkün deyil.
 
