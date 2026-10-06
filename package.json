@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed": "node src/seed.js",
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "gitignore": "^0.7.0",
+    "mongoose": "^9.10.1",
+    "node-cron": "^4.2.1",
+    "node-telegram-bot-api": "^2.1.0",
+    "nodemon": "^3.1.14",
+    "read-excel-file": "^9.3.10"
+  }
+}
